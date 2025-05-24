@@ -56,6 +56,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const heroPitch = document.querySelector('#hero .elevator-pitch');
   if(heroH2) heroH2.style.animationPlayState = 'running';
   if(heroPitch) heroPitch.style.animationPlayState = 'running';
+  setupNavToggle(); // Always run nav toggle setup for mobile nav
 });
 
 // Smooth scroll for nav
@@ -174,7 +175,14 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       }
     } else {
-      loginArea.innerHTML = '<a href="login.html" class="nav-link" style="color:#ffe7a0;">Login</a>';
+      loginArea.innerHTML = '<button class="nav-link account-nav-link" id="login-btn">Login</button>';
+      const loginButton = document.getElementById('login-btn');
+      if (loginButton) {
+        loginButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.location.href = 'login.html';
+        });
+      }
     }
   }
 });
@@ -243,7 +251,7 @@ function updateLoginArea() {
                 });
             }
         } else {
-            loginArea.innerHTML = '<a href="login.html" class="nav-link account-nav-link" id="login-btn" style="padding:0.18em 0.85em; font-size:1em; color:#ffe7a0; font-weight:bold;">Login</a>';
+            loginArea.innerHTML = '<button class="nav-link account-nav-link" id="login-btn">Login</button>';
             const loginButton = document.getElementById('login-btn');
             if (loginButton) {
                 loginButton.addEventListener('click', function(e) {
@@ -254,3 +262,15 @@ function updateLoginArea() {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const nav = document.getElementById('main-nav');
+  if (nav) {
+    nav.setAttribute('role', 'navigation');
+    nav.setAttribute('aria-label', 'Main navigation');
+  }
+  const navToggle = document.getElementById('nav-toggle');
+  if (navToggle) {
+    navToggle.setAttribute('aria-label', 'Toggle navigation');
+  }
+});

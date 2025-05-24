@@ -1,5 +1,5 @@
 {
-  "websiteVersion": "1.0.0",
+  "websiteVersion": "1.0.2",
   "apiEndpoints": {
     "userLogin": "/api/login",
     "userData": "/api/user-data"

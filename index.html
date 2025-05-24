@@ -198,17 +198,27 @@
         }
     }
 
-    // Inject version number from package.json into the footer
-    // Using a placeholder span with id 'site-version' for dynamic version injection
-    fetch('package.json')
+    // Inject version number and animationsEnabled from site-variables.json into the footer
+    fetch('site-variables.json')
         .then(response => response.json())
         .then(data => {
-            const version = data.version;
+            const version = data.websiteVersion;
             document.getElementById('site-version').innerText = `v${version}`;
+            // Show animationsEnabled status at the bottom of the page
+            let animStatus = document.getElementById('animations-status');
+            if (!animStatus) {
+                animStatus = document.createElement('div');
+                animStatus.id = 'animations-status';
+                animStatus.style.textAlign = 'center';
+                animStatus.style.fontSize = '0.9em';
+                animStatus.style.margin = '8px 0 0 0';
+                document.body.appendChild(animStatus);
+            }
+            animStatus.innerText = `Animations Enabled: ${data.animationsEnabled ? 'Yes' : 'No'}`;
         })
         .catch(error => {
-            console.error('Error loading version:', error);
-            document.getElementById('site-version').innerText = ''; // Fallback in case of error
+            console.error('Error loading site variables:', error);
+            document.getElementById('site-version').innerText = '';
         });
     </script>
 </body>

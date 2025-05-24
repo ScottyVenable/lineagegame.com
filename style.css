@@ -977,3 +977,23 @@ header > .container {
 .hero-anim-text.visible {
   opacity: 1;
 }
+
+/* Login Button Styling */
+#login-btn.nav-link.account-nav-link {
+    background: none;
+    border: 2px solid var(--accent-gold);
+    color: var(--accent-gold);
+    border-radius: 4px;
+    padding: 0.18em 0.85em;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    margin: 0.2em 0.5em;
+    outline: none;
+}
+#login-btn.nav-link.account-nav-link:hover, #login-btn.nav-link.account-nav-link:focus {
+    background: var(--accent-gold);
+    color: #2d1e13;
+    border-color: var(--accent-orange);
+}

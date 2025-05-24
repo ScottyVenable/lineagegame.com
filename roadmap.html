@@ -11,9 +11,17 @@
 </head>
 <body>
   <header>
-    <div class="container header-flex">
-      <h1>Lineage: Ancestral Legacies</h1>
-      <nav id="main-nav">
+    <div class="container header-flex header-animate" id="header-animate">
+      <button id="nav-toggle" aria-label="Toggle navigation" class="nav-toggle header-animate-stagger" tabindex="0">
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+      </button>
+      <h1 class="site-title-advanced header-animate-stagger">
+          <span class="site-title-main">Lineage</span>
+          <span class="site-title-sub">Ancestral Legacies</span>
+      </h1>
+      <nav id="main-nav" class="header-animate-stagger">
         <a href="index.html" id="nav-overview">Overview</a>
         <a href="features.html" id="nav-features">Features</a>
         <a href="gameplay.html" id="nav-gameplay">Gameplay</a>
@@ -21,9 +29,10 @@
         <a href="language.html" id="nav-language">Language</a>
         <a href="roadmap.html" id="nav-roadmap">Roadmap</a>
         <a href="contact.html" id="nav-contact">Contact</a>
+        <a href="admin.html" id="nav-admin" class="nav-link">Admin Center</a>
       </nav>
       <!-- Login/Account button, updated by JS based on session -->
-      <div id="login-area" style="margin-left:auto;"></div>
+      <div id="login-area" class="header-animate-stagger" style="margin-left:auto;"></div>
     </div>
   </header>
   <main class="container">
@@ -39,7 +48,23 @@
     </section>
   </main>
   <footer>
-    &copy; 2025 Lineage: Ancestral Legacies
-  </footer>
+    <div class="container">
+        <div class="social-row">
+            <a href="https://discord.gg/" class="social-btn" title="Discord" target="_blank" rel="noopener">
+                <!-- Discord SVG icon here -->
+            </a>
+            <a href="https://facebook.com/" class="social-btn" title="Facebook" target="_blank" rel="noopener">
+                <!-- Facebook SVG icon here -->
+            </a>
+            <a href="https://instagram.com/" class="social-btn" title="Instagram" target="_blank" rel="noopener">
+                <!-- Instagram SVG icon here -->
+            </a>
+            <a href="https://youtube.com/" class="social-btn" title="YouTube" target="_blank" rel="noopener">
+                <!-- YouTube SVG icon here -->
+            </a>
+        </div>
+        <p>&copy; 2025 Cadential Studios | Lineage: Ancestral Legacies. All rights reserved. <span id="site-version" class="site-version"></span></p>
+    </div>
+</footer>
 </body>
 </html>
