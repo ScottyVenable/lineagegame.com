@@ -1,0 +1,17 @@
+{
+  "websiteVersion": "1.0.0",
+  "apiEndpoints": {
+    "userLogin": "/api/login",
+    "userData": "/api/user-data"
+  },
+  "defaultUser": {
+    "username": "Guest",
+    "role": "guest"
+  },
+  "theme": {
+    "primaryColor": "#2d1e13",
+    "secondaryColor": "#bfa76a",
+    "textColor": "#f3e9d2"
+  },
+  "animationsEnabled": true
+}

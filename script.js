@@ -179,115 +179,78 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// --- ADMIN PAGE SCRIPT ---
-// This script runs only on the admin.html page
-if (window.location.pathname.endsWith('admin.html')) {
-  // Session check (demo: admin only if logged in as admin)
-  const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
-  const role = sessionStorage.getItem('role');
-  if (!isLoggedIn || role !== 'admin') {
-    // Redirect to home page if not admin
-    window.location.href = 'index.html';
-  }
-
-  // --- ADMIN UI INTERACTIONS ---
-  // Simplified: just a logout button that appears if logged in
-  const adminPanel = document.getElementById('admin-panel');
-  if (adminPanel) {
-    const logoutBtn = document.createElement('button');
-    logoutBtn.id = 'admin-logout';
-    logoutBtn.textContent = 'Logout';
-    logoutBtn.className = 'admin-button';
-    adminPanel.appendChild(logoutBtn);
-
-    logoutBtn.addEventListener('click', () => {
-      // Clear session and redirect to login
-      sessionStorage.clear();
-      window.location.href = 'login.html';
-    });
-  }
+// Load universal header with error handling
+function loadHeader() {
+    fetch('header.html')
+        .then(response => {
+            if (!response.ok) {
+                console.error(`Failed to load header: ${response.status} ${response.statusText}`);
+                return '';
+            }
+            return response.text();
+        })
+        .then(data => {
+            if (data) {
+                document.querySelector('header').innerHTML = data;
+                setupNavToggle(); // Reinitialize nav toggle after loading header
+            }
+        })
+        .catch(error => {
+            console.error('Error loading header:', error);
+        });
 }
 
-// --- LOGIN PAGE SCRIPT ---
-// This script runs only on the login.html page
-if (window.location.pathname.endsWith('login.html')) {
-  const loginForm = document.getElementById('login-form');
-  if (loginForm) {
-    loginForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(loginForm);
-      const username = formData.get('username');
-      const password = formData.get('password');
-      // Demo logic: accept any non-empty username/password
-      if (username && password) {
-        sessionStorage.setItem('loggedIn', 'true');
-        sessionStorage.setItem('username', username);
-        sessionStorage.setItem('role', 'user'); // Default role
-        // Redirect to account page (or admin page if admin credentials were used)
-        window.location.href = username === 'admin' && password === 'admin' ? 'admin.html' : 'account.html';
-      } else {
-        alert('Please enter a valid username and password.');
-      }
-    });
-  }
+// Setup nav toggle for mobile
+function setupNavToggle() {
+    const navToggle = document.getElementById('nav-toggle');
+    const mainNav = document.getElementById('main-nav');
+    if (navToggle) {
+        navToggle.style.display = 'block';
+        navToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('open');
+        });
+    }
 }
 
-// --- ACCOUNT PAGE SCRIPT ---
-// This script runs only on the account.html page
-if (window.location.pathname.endsWith('account.html')) {
-  const accountInfo = document.getElementById('account-info');
-  if (accountInfo) {
-    const username = sessionStorage.getItem('username');
-    const role = sessionStorage.getItem('role');
-    accountInfo.innerHTML = `<h2>Account Information</h2><p><strong>Username:</strong> ${username}</p><p><strong>Role:</strong> ${role}</p>`;
-  }
+// Populate login area
+function updateLoginArea() {
+    const loginArea = document.getElementById('login-area');
+    if (loginArea) {
+        const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+        const username = sessionStorage.getItem('username') || 'Guest';
 
-  // Order history table (demo data)
-  const orderHistory = document.getElementById('order-history');
-  if (orderHistory) {
-    const demoOrders = [
-      { id: 1, date: '2023-10-01', total: 29.99, status: 'Shipped' },
-      { id: 2, date: '2023-09-15', total: 49.99, status: 'Processing' },
-      { id: 3, date: '2023-08-20', total: 19.99, status: 'Delivered' }
-    ];
-    demoOrders.forEach(order => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${order.id}</td><td>${order.date}</td><td>$${order.total.toFixed(2)}</td><td>${order.status}</td>`;
-      orderHistory.appendChild(tr);
-    });
-  }
+        if (isLoggedIn) {
+            loginArea.innerHTML = `
+                <div class="account-welcome-label" style="text-align:center; font-size:0.98em; color:#ffe7a0; font-weight:600; margin-bottom:0.1em;">Welcome, ${username}!</div>
+                <a href="#" class="nav-link account-nav-link" id="account-btn" style="padding:0.18em 0.85em; font-size:1em; color:#ffe7a0; font-weight:bold;">Account</a>
+                <a href="#" class="nav-link account-nav-link" id="logout-btn" style="padding:0.18em 0.85em; font-size:1em; color:#ffe7a0; font-weight:bold;">Logout</a>
+            `;
+
+            const accountBtn = document.getElementById('account-btn');
+            if (accountBtn) {
+                accountBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'account.html';
+                });
+            }
+
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    sessionStorage.clear(); // Clear session storage to log out
+                    window.location.reload(); // Reload the page to reflect the logged-out state
+                });
+            }
+        } else {
+            loginArea.innerHTML = '<a href="login.html" class="nav-link account-nav-link" id="login-btn" style="padding:0.18em 0.85em; font-size:1em; color:#ffe7a0; font-weight:bold;">Login</a>';
+            const loginButton = document.getElementById('login-btn');
+            if (loginButton) {
+                loginButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'login.html';
+                });
+            }
+        }
+    }
 }
-
-// --- HEADER ENTRANCE ANIMATION ---
-document.addEventListener('DOMContentLoaded', function() {
-  // Animate header elements in with staggered effect for a modern, polished look
-  const header = document.getElementById('header-animate');
-  if (header) {
-    // Start hidden, then trigger animation
-    setTimeout(() => {
-      header.classList.add('header-animate-in');
-    }, 80); // Slight delay for effect
-  }
-
-  // Staggered nav button animation
-  const nav = document.getElementById('main-nav');
-  if (nav) {
-    const navLinks = nav.querySelectorAll('.nav-entrance');
-    // Spread the animation so the total duration is about 2 seconds for all buttons
-    // (e.g., 7 buttons, so ~285ms per button)
-    const totalDuration = 2000; // ms
-    const perButtonDelay = navLinks.length > 1 ? Math.floor(totalDuration / (navLinks.length - 1)) : 0;
-    navLinks.forEach((link, i) => {
-      setTimeout(() => {
-        link.classList.add('nav-entrance-in');
-      }, 200 + i * perButtonDelay); // 200ms initial delay for polish
-    });
-  }
-
-  // --- HERO TITLE: NO ANIMATION, STATIC TEXT ---
-  // Instantly show all hero-anim-text spans on every load (no animation, no session check)
-  ['hero-anim-1','hero-anim-2','hero-anim-3'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('visible');
-  });
-});
