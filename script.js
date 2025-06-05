@@ -51,24 +51,24 @@ function revealSections() {
 window.addEventListener('scroll', revealSections);
 window.addEventListener('DOMContentLoaded', () => {
   revealSections(); // Always reveal sections first
-  // Animate hero text (guarded for missing elements)
   const heroH2 = document.querySelector('#hero h2');
   const heroPitch = document.querySelector('#hero .elevator-pitch');
-  if(heroH2) heroH2.style.animationPlayState = 'running';
-  if(heroPitch) heroPitch.style.animationPlayState = 'running';
-  setupNavToggle(); // Always run nav toggle setup for mobile nav
+  if (heroH2) heroH2.style.animationPlayState = 'running';
+  if (heroPitch) heroPitch.style.animationPlayState = 'running';
 });
 
-// Smooth scroll for nav
-Array.from(document.querySelectorAll('nav a')).forEach(link => {
-  link.addEventListener('click', e => {
-    const href = link.getAttribute('href');
-    if (href.startsWith('#')) {
-      e.preventDefault();
-      document.querySelector(href).scrollIntoView({ behavior: 'smooth' });
-    }
+// Smooth scroll for nav links
+function enableSmoothScroll() {
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', e => {
+      const href = link.getAttribute('href');
+      if (href.startsWith('#')) {
+        e.preventDefault();
+        document.querySelector(href).scrollIntoView({ behavior: 'smooth' });
+      }
+    });
   });
-});
+}
 
 // Back to top button
 const backToTop = document.createElement('button');
@@ -89,18 +89,19 @@ backToTop.addEventListener('click', () => {
 });
 
 // Navigation highlighting for multi-page site
-// This script highlights the nav link for the current page, even when using .html files
-const navLinks = document.querySelectorAll('nav a');
-const current = window.location.pathname.split('/').pop() || 'index.html';
-navLinks.forEach(link => {
-    // For index.html, also highlight if href is just '' or '/'
+// Highlights the nav link for the current page once the header is loaded
+function highlightCurrentNav() {
+  const navLinks = document.querySelectorAll('nav a');
+  const current = window.location.pathname.split('/').pop() || 'index.html';
+  navLinks.forEach(link => {
     if (
-        (current === 'index.html' && (link.getAttribute('href') === 'index.html' || link.getAttribute('href') === '' || link.getAttribute('href') === '/')) ||
-        link.getAttribute('href') === current
+      (current === 'index.html' && (link.getAttribute('href') === 'index.html' || link.getAttribute('href') === '' || link.getAttribute('href') === '/')) ||
+      link.getAttribute('href') === current
     ) {
-        link.classList.add('active');
+      link.classList.add('active');
     }
-});
+  });
+}
 
 // --- CONTACT FORM SUBMISSION HANDLING ---
 const contactForm = document.querySelector('.contact-form');
@@ -137,59 +138,11 @@ if (contactForm) {
 }
 
 // --- MOBILE NAVIGATION & LOGIN/ACCOUNT BUTTON LOGIC ---
-window.addEventListener('DOMContentLoaded', () => {
-  // Hamburger menu toggle for mobile nav (REMOVED: not used, prevents blank button)
-
-  // Login/Account button logic
-  const loginArea = document.getElementById('login-area');
-  if (loginArea) {
-    // Check for session (demo: use loggedIn, username, and role)
-    const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
-    const username = sessionStorage.getItem('username') || 'User';
-    const role = sessionStorage.getItem('role') || 'user';
-    // Show/hide Admin Center nav link if admin
-    const mainNav = document.getElementById('main-nav');
-    let adminLink = document.getElementById('nav-admin');
-    if (mainNav) {
-      if (role === 'admin') {
-        if (!adminLink) {
-          adminLink = document.createElement('a');
-          adminLink.href = 'admin.html';
-          adminLink.id = 'nav-admin';
-          adminLink.textContent = 'Admin Center';
-          mainNav.appendChild(adminLink);
-        }
-      } else {
-        if (adminLink) adminLink.remove();
-      }
-    }
-    if (isLoggedIn) {
-      // Show 'Welcome, Username!' above the Account button
-      loginArea.innerHTML = `<div class="account-welcome-label" style="text-align:center; font-size:0.98em; color:#ffe7a0; font-weight:600; margin-bottom:0.1em;">Welcome, ${username}!</div><a href="#" class="nav-link account-nav-link" id="account-btn" style="padding:0.18em 0.85em; font-size:1em; color:#ffe7a0; font-weight:bold;">Account</a>`;
-      // Add click event to redirect to account page
-      const accountBtn = document.getElementById('account-btn');
-      if (accountBtn) {
-        accountBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          window.location.href = 'account.html';
-        });
-      }
-    } else {
-      loginArea.innerHTML = '<button class="nav-link account-nav-link" id="login-btn">Login</button>';
-      const loginButton = document.getElementById('login-btn');
-      if (loginButton) {
-        loginButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          window.location.href = 'login.html';
-        });
-      }
-    }
-  }
-});
+// Handled by updateLoginArea() after the header loads
 
 // Load universal header with error handling
 function loadHeader() {
-    fetch('header.html')
+    return fetch('header.html')
         .then(response => {
             if (!response.ok) {
                 console.error(`Failed to load header: ${response.status} ${response.statusText}`);
@@ -200,7 +153,10 @@ function loadHeader() {
         .then(data => {
             if (data) {
                 document.querySelector('header').innerHTML = data;
-                setupNavToggle(); // Reinitialize nav toggle after loading header
+                setupNavToggle();
+                highlightCurrentNav();
+                enableSmoothScroll();
+                updateLoginArea();
             }
         })
         .catch(error => {
@@ -226,6 +182,22 @@ function updateLoginArea() {
     if (loginArea) {
         const isLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
         const username = sessionStorage.getItem('username') || 'Guest';
+        const role = sessionStorage.getItem('role') || 'user';
+        const mainNav = document.getElementById('main-nav');
+        let adminLink = document.getElementById('nav-admin');
+        if (mainNav) {
+            if (role === 'admin') {
+                if (!adminLink) {
+                    adminLink = document.createElement('a');
+                    adminLink.href = 'admin.html';
+                    adminLink.id = 'nav-admin';
+                    adminLink.textContent = 'Admin Center';
+                    mainNav.appendChild(adminLink);
+                }
+            } else if (adminLink) {
+                adminLink.remove();
+            }
+        }
 
         if (isLoggedIn) {
             loginArea.innerHTML = `
@@ -264,13 +236,15 @@ function updateLoginArea() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  const nav = document.getElementById('main-nav');
-  if (nav) {
-    nav.setAttribute('role', 'navigation');
-    nav.setAttribute('aria-label', 'Main navigation');
-  }
-  const navToggle = document.getElementById('nav-toggle');
-  if (navToggle) {
-    navToggle.setAttribute('aria-label', 'Toggle navigation');
-  }
+  loadHeader().then(() => {
+    const nav = document.getElementById('main-nav');
+    if (nav) {
+      nav.setAttribute('role', 'navigation');
+      nav.setAttribute('aria-label', 'Main navigation');
+    }
+    const navToggle = document.getElementById('nav-toggle');
+    if (navToggle) {
+      navToggle.setAttribute('aria-label', 'Toggle navigation');
+    }
+  });
 });
